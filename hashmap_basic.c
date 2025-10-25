@@ -1,12 +1,12 @@
 #ifdef _WIN32
--#define _strdup strdup //windows 
+#define _strdup strdup //windows 
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define INITIAL_SIZE 53 //prime number is better
+#define INITIAL_SIZE 10 //prime number is better
 #define LOAD_FACTOR 0.85 //for resize map when total existed nodes > 85%
 
 /*declaration what node's inside*/
@@ -54,6 +54,47 @@ unsigned long hash(char *key, int capacity) {
   return hash % capacity;
 }
 
+/*resize map when existed node cross 85%*/
+/*send a warning message when capacity > 1051, no pc can handle that lol*/
+int primes[] = {107, 211, 443, 839, 1051};
+
+int nextCapacity(int current) {
+  int size = sizeof(primes) / sizeof(primes[0]);
+  for (int i = 0; i < size; i++) {    
+    if (*(primes + i) > current) {
+      return *(primes + i);      
+    }
+  }
+  printf("warning: capacity over 1051, remember free it when no longer use!\n");  
+  return current * 2 - 1; // not a prime number but ok i will find the way out
+}
+
+/*resize map for sure*/
+void resizeMap(HashMap *map) {
+  int oldCapacity = map->capacity;
+  int newCapacity = nextCapacity(oldCapacity);
+  
+  Node **newTable = calloc(newCapacity, sizeof(Node*));  
+  
+  for (int i = 0; i < oldCapacity; i++) {
+    Node *entry = map->table[i];
+    while (entry) {
+      Node *next = entry->next; //keep all node from old table
+      unsigned long index = hash(entry->key, newCapacity);
+      
+      entry->next = newTable[index]; //connect from oldtable's node to new map 
+      newTable[index] = entry;
+      
+      entry = next;
+    }
+  }
+  
+  free(map->table);
+  map->capacity = newCapacity;
+  map->table = newTable;
+  printf("bfdf");  
+}  
+
 /*insert time*/
 void insert(HashMap *map, char *key, int data) {
   unsigned long index = hash(key, map->capacity);
@@ -69,6 +110,13 @@ void insert(HashMap *map, char *key, int data) {
   Node *newNode = createNode(key, data);
   newNode->next = map->table[index];
   map->table[index] = newNode;
+  map->size++;
+
+  /*resize map*/  
+  if ((float)(map->size) / (map->capacity) > LOAD_FACTOR) {
+    resizeMap(map);
+  }
+  
 }
 
 /*delete some node by key, its just skip node and free() at prev*/
@@ -85,6 +133,7 @@ void deleteNode(HashMap *map, char *key) {
       }
       free(entry->key);
       free(entry);
+      map->size--;      
       return;      
     }
     prev = entry;
@@ -104,6 +153,34 @@ void displayAll(HashMap *map) {
   }
 }
 
+/*how about look up by data => print key?*/
+void lookUpByData(HashMap *map, int data) {
+  for (int i = 0; i < map->capacity; i++) {
+    Node *entry = map->table[i];
+    while (entry) {
+      if (entry->data == data) {
+	printf("%s ", entry->key);
+      }
+      entry = entry->next;      
+    }      
+  }
+}
+
+/*delete all map*/
+void deleteMap(HashMap *Map) {
+  for (int i = 0; i < Map->capacity; i++) {
+    Node *entry = Map->table[i];
+    while (entry) {
+      Node *temp = entry->next;
+      free(entry->key);
+      free(entry);
+      entry = temp;      
+    }
+  }
+  free(Map->table);
+  free(Map);
+}
+
 int main() {
 
   HashMap *myMap;
@@ -111,10 +188,21 @@ int main() {
 
   insert(myMap, "chanh", 20);
   insert(myMap, "vy", 20);
+  insert(myMap, "tram", 20);
+  insert(myMap, "thoai", 20);
+  insert(myMap, "khoi", 20);
+  insert(myMap, "khang", 20);
+  insert(myMap, "khuem", 20);
+  insert(myMap, "hung", 20);
+  insert(myMap, "tin", 20);
 
-  deleteNode(myMap, "vy");
+  //printf("%d\n", myMap->capacity);
+
+  //lookUpByData(myMap, 20);  
   
-  displayAll(myMap);  
+  //displayAll(myMap);
+
+  deleteMap(myMap);
   
   return EXIT_SUCCESS;  
 }  
