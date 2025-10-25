@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define INITIAL_SIZE 10 //prime number is better
+#define INITIAL_SIZE 13 //prime number is better
 #define LOAD_FACTOR 0.85 //for resize map when total existed nodes > 85%
 
 /*declaration what node's inside*/
