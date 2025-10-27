@@ -40,14 +40,44 @@ void displayLNR(Node *root) {
   }    
 }
 
+void displayLRN(Node *root) {
+  if (root != NULL) {
+    displayLRN(root->left);
+    displayLRN(root->right);
+    printf("%d ", root->data);    
+  }
+}
+
+void displayNLR(Node *root) {
+  if (root != NULL) {
+    printf("%d ", root->data);
+    displayNLR(root->left);
+    displayNLR(root->right);
+  }
+}
+
+
 int main() {
 
   Node *root = NULL;
 
   root = insertNode(root, 3);
   root = insertNode(root, 6);
+  root = insertNode(root, 1);
+  root = insertNode(root, 2);
+  root = insertNode(root, 8);
+  root = insertNode(root, 5);
+  root = insertNode(root, 0);
 
-  displayLNR(root);  
+  displayLNR(root);
+  
+  printf("\n");
+  
+  displayNLR(root);
+
+  printf("\n");
+
+  displayLRN(root);
   
   return EXIT_SUCCESS;  
 }  
