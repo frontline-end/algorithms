@@ -2,34 +2,39 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define FRONT_COIN 0
-#define BACK_COIN 1
+#define SUNNY 0
+#define RAINY 1
+#define CLOUDY 2
 
-#define STATUS 2
+#define STATUS 3
 
-float transition[STATUS][STATUS] = {{0.5, 0.5}, {0.5, 0.5}};
+float transition[STATUS][STATUS] = {{0.3, 0.3, 0.4},
+                                    {0.2, 0.4, 0.4},
+                                    {0.4, 0.4, 0.2}};
 
-int nextTransition(int current) {
+char *status[STATUS] = {"sunny", "rainny", "cloudy"};
+
+int changeTransition(int current) {
+
   float limits = (float)rand() / (float)RAND_MAX;
-  float cumulative = 0;
-  for (int i = 0; i < STATUS; i++) {
-    if (cumulative > limits) {
-      return i;
-    }
-    cumulative += transition[current][i];
-  }
-  return current;
-}
+  float cumulative = 0.0;
 
+  for (int i = 0; i < STATUS; i++) {
+    cumulative += transition[current][i];
+    if (cumulative > limits) {
+      return i;      
+    }      
+  }     
+  return current; //by default
+}
 int main() {
 
   srand(time(NULL));
-  
-  int currentStatus = BACK_COIN;
+  int current = SUNNY;
 
-  for (int i = 1; i < 10; i++) {
-    printf("%d\n", currentStatus);
-    currentStatus = nextTransition(currentStatus);
+  for (int i = 0; i < 10; i++) {
+    printf("%s\n", status[current]);
+    current = changeTransition(current);
   }
   
   return EXIT_SUCCESS;  

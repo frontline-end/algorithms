@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+void printArray(int *arr, int size) {
+  for (int i = 0; i < size; i++) {
+    printf("%d ", *(arr + i));    
+  }
+}
+
+void insertionSort(int *arr, int size) {
+  for (int i = 1; i < size; i++) {
+    int key = arr[i];
+    int j = i - 1;
+    while (j >= 0 && arr[j] > key) {
+      arr[j + 1] = arr[j];
+      j = j - 1;
+    }
+    arr[j + 1] = key;    
+  }
+}
+
+int main() {
+
+  int arr[] = {47, 3, 89, 12, 56, 23, 78, 5, 34, 91};
+  int size = sizeof(arr) / sizeof(arr[0]);
+
+  printArray(arr, size);
+
+  puts("");
+  
+  insertionSort(arr, size);
+
+  printArray(arr, size);
+  
+  return EXIT_SUCCESS;  
+}  

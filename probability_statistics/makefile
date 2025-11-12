@@ -1,6 +1,6 @@
 cc = clang
 c_flags = -Wall -Wextra -g
-src = insertionSort
+src = markovChain
 target = out
 
 all: $(target)
@@ -12,4 +12,4 @@ run:
 	./$(target)
 
 clear:
-	rm -f *c~ $(target) $(src)
+	rm -f *~ $(target)
