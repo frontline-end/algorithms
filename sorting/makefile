@@ -1,6 +1,6 @@
 cc = clang
 c_flags = -Wall -Wextra -g
-src = insertionSort
+src = mergeSort
 target = out
 
 all: $(target)
